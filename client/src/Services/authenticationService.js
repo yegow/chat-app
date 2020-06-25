@@ -25,6 +25,7 @@ export function useLogin() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
         };
+        console.log("Process env", process.env);
 
         return fetch(
             `${process.env.REACT_APP_API_URL}/api/users/login`,
