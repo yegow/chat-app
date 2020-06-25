@@ -70,7 +70,7 @@ export function useRegister() {
             })
             .catch(function(response) {
                 if (response) {
-                    enqueueSnackbar(response, {
+                    enqueueSnackbar(response.message, {
                         variant: 'error',
                     });
                 } else {

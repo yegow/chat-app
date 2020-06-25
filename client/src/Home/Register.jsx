@@ -78,6 +78,7 @@ const Register = props => {
                                     history.push(from);
                                 },
                                 error => {
+                                    console.log("Error in submit", error);
                                     setSubmitting(false);
                                     setStatus(error);
                                 }
