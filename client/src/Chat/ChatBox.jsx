@@ -12,6 +12,8 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import socketIOClient from 'socket.io-client';
+import { useSnackbar } from 'notistack';
+import moment from "moment";
 
 import {
     useGetGlobalMessages,
@@ -19,6 +21,10 @@ import {
     useGetConversationMessages,
     useSendConversationMessage,
 } from '../Services/chatService';
+
+import { initials } from "./Conversations";
+import { authenticationService } from '../Services/authenticationService';
+import titleCase from '../Utilities/titleCase';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -44,11 +50,15 @@ const useStyles = makeStyles(theme => ({
     },
     newMessageRow: {
         width: '100%',
-        padding: theme.spacing(0, 2, 1),
+        padding: theme.spacing(0, 2),
     },
     inputRow: {
         display: 'flex',
         alignItems: 'flex-end',
+    },
+    messageFormPaper: {
+        width: "100%",
+        padding: theme.spacing(1, 0, 1.7),
     },
     form: {
         width: '100%',
@@ -59,12 +69,34 @@ const useStyles = makeStyles(theme => ({
     listItem: {
         width: '80%',
     },
+    listItemCurrentUser: {
+        width: "80%",
+        marginLeft: "auto",
+        flexDirection: "row-reverse",
+    },
+    messagePaper: {
+        padding: theme.spacing(0, 2),
+    },
+    listItemTextRight: {
+        textAlign: "right",
+    },
+    listItemTextLeft: {
+        display: "block",
+        textAlign: "left",
+    },
+    timeText: {
+        display: "block",
+        fontSize: "0.688em",
+    },
 }));
 
 const ChatBox = props => {
     const [newMessage, setNewMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [lastMessage, setLastMessage] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { enqueueSnackbar } = useSnackbar()
 
     const getGlobalMessages = useGetGlobalMessages();
     const sendGlobalMessage = useSendGlobalMessage();
@@ -106,13 +138,21 @@ const ChatBox = props => {
 
     const handleSubmit = e => {
         e.preventDefault();
+        setIsSubmitting(true);
+        if (!newMessage.trim().length) {
+            return enqueueSnackbar("Cannot send empty message.", {
+                variant: "error"
+            });
+        }
         if (props.scope === 'Global Chat') {
             sendGlobalMessage(newMessage).then(() => {
                 setNewMessage('');
+                setIsSubmitting(false);
             });
         } else {
             sendConversationMessage(props.user._id, newMessage).then(res => {
                 setNewMessage('');
+                setIsSubmitting(false);
             });
         }
     };
@@ -122,7 +162,7 @@ const ChatBox = props => {
             <Grid item xs={12} className={classes.headerRow}>
                 <Paper className={classes.paper} square elevation={2}>
                     <Typography color="inherit" variant="h6">
-                        {props.scope}
+                        {titleCase(props.scope)}
                     </Typography>
                 </Paper>
             </Grid>
@@ -132,57 +172,43 @@ const ChatBox = props => {
                         {messages && (
                             <List>
                                 {messages.map(m => (
-                                    <ListItem
-                                        key={m._id}
-                                        className={classes.listItem}
-                                        alignItems="flex-start"
-                                    >
-                                        <ListItemAvatar
-                                            className={classes.avatar}
-                                        >
-                                            <Avatar>H</Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={m.fromObj[0].name}
-                                            secondary={
-                                                <React.Fragment>
-                                                    {m.body}
-                                                </React.Fragment>
-                                            }
-                                        />
-                                    </ListItem>
+                                    <Message key={m._id} message={m} />
                                 ))}
                             </List>
                         )}
                         <div ref={chatBottom} />
                     </Grid>
                     <Grid item xs={12} className={classes.inputRow}>
-                        <form onSubmit={handleSubmit} className={classes.form}>
-                            <Grid
-                                container
-                                className={classes.newMessageRow}
-                                alignItems="flex-end"
-                            >
-                                <Grid item xs={11}>
-                                    <TextField
-                                        id="message"
-                                        label="Message"
-                                        variant="outlined"
-                                        margin="dense"
-                                        fullWidth
-                                        value={newMessage}
-                                        onChange={e =>
-                                            setNewMessage(e.target.value)
-                                        }
-                                    />
+                        <Paper className={classes.messageFormPaper} square elevation={0}>
+                            <form onSubmit={handleSubmit} className={classes.form}>
+                                <Grid
+                                    container
+                                    className={classes.newMessageRow}
+                                    alignItems="flex-end"
+                                >
+                                    <Grid item xs={11}>
+                                        <TextField
+                                            id="message"
+                                            label="Message"
+                                            variant="outlined"
+                                            margin="dense"
+                                            fullWidth
+                                            value={newMessage}
+                                            onChange={e =>
+                                                setNewMessage(e.target.value)
+                                            }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton type="submit"
+                                            color="primary" 
+                                            disabled={(newMessage.trim().length < 1) || isSubmitting}>
+                                            <SendIcon />
+                                        </IconButton>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={1}>
-                                    <IconButton type="submit">
-                                        <SendIcon />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        </form>
+                            </form>
+                        </Paper>
                     </Grid>
                 </Grid>
             </Grid>
@@ -191,3 +217,46 @@ const ChatBox = props => {
 };
 
 export default ChatBox;
+
+
+function Message({ message }) {
+    const classes = useStyles();
+    const isCurrentUser = 
+        message.fromObj[0].username === authenticationService.currentUserValue.username;
+
+    return(
+        <ListItem
+            className={isCurrentUser ? classes.listItemCurrentUser : classes.listItem}
+            alignItems="flex-start"
+        >
+            <ListItemAvatar
+                className={classes.avatar}
+            >
+                <Avatar>{initials(message.fromObj[0].name)}</Avatar>
+            </ListItemAvatar>
+            <Paper className={classes.messagePaper} elevation={0}>
+                <ListItemText
+                    primary={
+                        <React.Fragment>
+                            {titleCase(message.fromObj[0].name)}
+                            <Typography
+                                component="small"
+                                className={classes.timeText}
+                                color="textSecondary"
+                                >
+                                {moment(message.date).format("LT")}
+                            </Typography>
+                        </React.Fragment>
+                    }
+                    className={!!isCurrentUser ? classes.listItemTextRight : ""}
+                    secondary={
+                        <span className={classes.listItemTextLeft}>
+                            {message.body}
+                            
+                        </span>
+                    }
+                />
+            </Paper>
+        </ListItem>
+    )
+}

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import People from "@material-ui/icons/People";
+import ChatBubble from "@material-ui/icons/ChatBubble";
 
 import Header from '../Layout/Header';
 import ChatBox from './ChatBox';
@@ -46,7 +47,7 @@ const Chat = () => {
         <React.Fragment>
             <Header />
             <Grid container>
-                <Grid item md={4} className={classes.sidebar}>
+                <Grid item xs={4} md={4} className={classes.sidebar}>
                     <Paper className={classes.paper} square elevation={5}>
                         <Paper square>
                             <Tabs
@@ -56,8 +57,8 @@ const Chat = () => {
                                 indicatorColor="primary"
                                 textColor="primary"
                             >
-                                <Tab label="Chats" />
-                                <Tab label="Users" />
+                                <Tab label="Chats" icon={<ChatBubble />} />
+                                <Tab label="Users" icon={<People />} />
                             </Tabs>
                         </Paper>
                         {tab === 0 && (
@@ -71,7 +72,7 @@ const Chat = () => {
                         )}
                     </Paper>
                 </Grid>
-                <Grid item md={8}>
+                <Grid item xs={8} md={8}>
                     <ChatBox scope={scope} user={user} />
                 </Grid>
             </Grid>

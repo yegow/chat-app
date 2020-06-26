@@ -25,7 +25,6 @@ export function useLogin() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
         };
-        console.log("Process env", process.env);
 
         return fetch(
             `${process.env.REACT_APP_API_URL}/api/users/login`,
@@ -37,8 +36,8 @@ export function useLogin() {
                 currentUserSubject.next(user);
                 return user;
             })
-            .catch(function() {
-                enqueueSnackbar('Failed to Login', {
+            .catch(function(res) {
+                enqueueSnackbar(res || 'Failed to Login', {
                     variant: 'error',
                 });
             });

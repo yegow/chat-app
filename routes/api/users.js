@@ -115,7 +115,7 @@ router.post('/login', (req, res) => {
         if (!user) {
             return res
                 .status(404)
-                .json({ usernamenotfound: 'Username not found' });
+                .json({ message: 'Username not found' });
         }
         // Check password
         bcrypt.compare(password, user.password).then(isMatch => {
@@ -145,7 +145,7 @@ router.post('/login', (req, res) => {
             } else {
                 return res
                     .status(400)
-                    .json({ passwordincorrect: 'Password incorrect' });
+                    .json({ message: 'Password incorrect' });
             }
         });
     });

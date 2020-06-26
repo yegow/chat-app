@@ -77,6 +77,7 @@ const Login = props => {
                             values,
                             touched,
                             errors,
+                            isSubmitting
                         }) => (
                             <form
                                 onSubmit={handleSubmit}
@@ -127,6 +128,7 @@ const Login = props => {
                                     variant="contained"
                                     color="primary"
                                     className={classes.submit}
+                                    disabled={isSubmitting}
                                 >
                                     Login
                                 </Button>

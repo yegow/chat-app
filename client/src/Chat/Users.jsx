@@ -8,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import socketIOClient from 'socket.io-client';
 
 import { useGetUsers } from '../Services/userService';
+import { initials } from "./Conversations";
+import titleCase from '../Utilities/titleCase';
 
 const useStyles = makeStyles(theme => ({
     subheader: {
@@ -62,9 +64,9 @@ const Users = props => {
                             button
                         >
                             <ListItemAvatar className={classes.avatar}>
-                                <Avatar>AD</Avatar>
+                                <Avatar>{initials(u.name)}</Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={u.name} />
+                            <ListItemText primary={titleCase(u.name)} />
                         </ListItem>
                     ))}
                 </React.Fragment>

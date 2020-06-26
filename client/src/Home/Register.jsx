@@ -94,6 +94,7 @@ const Register = props => {
                             touched,
                             isValid,
                             errors,
+                            isSubmitting,
                         }) => (
                             <form
                                 onSubmit={handleSubmit}
@@ -184,6 +185,7 @@ const Register = props => {
                                     variant="contained"
                                     color="primary"
                                     className={classes.submit}
+                                    disabled={isSubmitting}
                                 >
                                     Register
                                 </Button>

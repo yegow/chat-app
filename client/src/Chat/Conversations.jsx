@@ -11,6 +11,7 @@ import socketIOClient from 'socket.io-client';
 
 import { useGetConversations } from '../Services/chatService';
 import { authenticationService } from '../Services/authenticationService';
+import titleCase from '../Utilities/titleCase';
 
 const useStyles = makeStyles(theme => ({
     subheader: {
@@ -98,10 +99,12 @@ const Conversations = props => {
                             }}
                         >
                             <ListItemAvatar>
-                                <Avatar>AD</Avatar>
+                                <Avatar>
+                                    {initials(handleRecipient(c.recipientObj).name)}
+                                </Avatar>
                             </ListItemAvatar>
                             <ListItemText
-                                primary={handleRecipient(c.recipientObj).name}
+                                primary={titleCase(handleRecipient(c.recipientObj).name)}
                                 secondary={
                                     <React.Fragment>
                                         {c.lastMessage}
@@ -117,3 +120,7 @@ const Conversations = props => {
 };
 
 export default Conversations;
+
+export function initials(name) {
+    return name[0].toUpperCase();
+}
