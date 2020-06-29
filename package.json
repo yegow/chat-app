@@ -9,7 +9,7 @@
         "server": "nodemon server.js",
         "client": "npm start --prefix client",
         "dev": "concurrently \"npm run server\" \"npm run client\"",
-        "prod": "ls && concurrently 'npm run server' 'serve -s ./client/build -p 3000'"
+        "prod": "concurrently 'npm run server' 'serve -s ./client/build -p 3000'"
     },
     "author": "Dave Howson",
     "license": "MIT",
