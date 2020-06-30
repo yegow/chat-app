@@ -30,7 +30,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Database configuration
-const db = require('./config/keys').mongoURI;
+const config = require('./config/keys');
+const db = process.env.NODE_ENV === "production" ? config.mongoURIProd : 
+    config.mongoURI;
 
 mongoose
     .connect(db, { useNewUrlParser: true, useFindAndModify: false })

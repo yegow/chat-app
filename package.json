@@ -8,6 +8,7 @@
         "start": "node server.js",
         "server": "nodemon server.js",
         "client": "npm start --prefix client",
+        "prod": "NODE_ENV=production node server.js",
         "dev": "concurrently \"npm run server\" \"npm run client\""
     },
     "author": "Dave Howson",
