@@ -13,7 +13,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const server = app.listen(port, () =>
-    console.log(`Server running on port ${port}`)
+    {
+        console.log("env", process.env.NODE_ENV);
+        console.log(`Server running on port ${port}`);
+    }
 );
 
 const io = require('socket.io').listen(server);
