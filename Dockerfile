@@ -7,6 +7,8 @@ RUN npm install
 
 COPY . .
 
+RUN export NODE_ENV=production
+
 EXPOSE 5000
 
-CMD ["npm", "run", "prod"]
+CMD ["npm", "start"]
